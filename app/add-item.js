@@ -16,6 +16,14 @@ import {
 } from '../src/services/cloudWardrobeService';
 
 const CATEGORIES = ['Shirts', 'Pants', 'Shoes', 'Accessories'];
+
+const SUBTYPES = {
+  Shirts: ['T-Shirt', 'Full Sleeve', 'Hoodie', 'Polo'],
+  Pants: ['Jeans', 'Chinos', 'Joggers'],
+  Shoes: ['Sneakers', 'Formal', 'Boots'],
+  Accessories: ['Watch', 'Cap', 'Belt'],
+};
+
 const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 const FITS = ['Slim', 'Regular', 'Oversized'];
 
@@ -32,7 +40,6 @@ function getColorName(hex) {
     { name: 'Brown', value: '#8b4513' },
   ];
 
-  // Very simple distance comparison
   const hexToRgb = (h) => {
     const bigint = parseInt(h.replace('#', ''), 16);
     return [
@@ -67,6 +74,8 @@ export default function AddItem() {
   const router = useRouter();
 
   const [category, setCategory] = useState('Shirts');
+  const [subType, setSubType] = useState(SUBTYPES['Shirts'][0]);
+
   const [size, setSize] = useState(null);
   const [fit, setFit] = useState(null);
   const [imageUri, setImageUri] = useState(null);
@@ -136,34 +145,40 @@ export default function AddItem() {
 
   const handleSave = async () => {
     try {
-    if (!imageUri) {
-      Alert.alert('Please select an image');
-      return;
+      if (!imageUri) {
+        Alert.alert('Please select an image');
+        return;
+      }
+
+      setLoading(true);
+
+      const imageUrl = await uploadWardrobeImage(imageUri);
+
+      await createWardrobeItem({
+        imageUrl,
+        category,
+        subType, // ✅ NEW FIELD
+        colorName,
+        colorHex: dominantColor,
+        size,
+        fit,
+      });
+
+      router.back();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(true);
-    const imageUrl = await uploadWardrobeImage(imageUri);
-
-    await createWardrobeItem({
-      imageUrl,
-      category,
-      colorName,
-      colorHex: dominantColor,
-      size,
-      fit,
-    });
-
-    router.back();
-  } catch (error) {
-    Alert.alert('Error', error.message);
-  }finally{
-    setLoading(false);
-  }
   };
+
+  /* ------------------------------------------ */
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Item</Text>
 
+      {/* Image */}
       <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
         <Text>Select from Gallery</Text>
       </TouchableOpacity>
@@ -183,12 +198,16 @@ export default function AddItem() {
         </>
       )}
 
+      {/* Category */}
       <Text style={styles.sectionTitle}>Category</Text>
       <View style={styles.row}>
         {CATEGORIES.map((cat) => (
           <TouchableOpacity
             key={cat}
-            onPress={() => setCategory(cat)}
+            onPress={() => {
+              setCategory(cat);
+              setSubType(SUBTYPES[cat][0]); // reset subtype
+            }}
             style={[
               styles.chip,
               category === cat && styles.activeChip,
@@ -207,6 +226,32 @@ export default function AddItem() {
         ))}
       </View>
 
+      {/* 🔥 NEW: SubType */}
+      <Text style={styles.sectionTitle}>Type</Text>
+      <View style={styles.row}>
+        {SUBTYPES[category].map((type) => (
+          <TouchableOpacity
+            key={type}
+            onPress={() => setSubType(type)}
+            style={[
+              styles.chip,
+              subType === type && styles.activeChip,
+            ]}
+          >
+            <Text
+              style={
+                subType === type
+                  ? styles.activeChipText
+                  : styles.chipText
+              }
+            >
+              {type}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Size */}
       <Text style={styles.sectionTitle}>Size (optional)</Text>
       <View style={styles.row}>
         {SIZES.map((s) => (
@@ -231,6 +276,7 @@ export default function AddItem() {
         ))}
       </View>
 
+      {/* Fit */}
       <Text style={styles.sectionTitle}>Fit (optional)</Text>
       <View style={styles.row}>
         {FITS.map((f) => (
@@ -255,16 +301,21 @@ export default function AddItem() {
         ))}
       </View>
 
-      <TouchableOpacity 
-      style={styles.saveButton} 
-      onPress={handleSave}
-      disabled={loading}
+      {/* Save */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={handleSave}
+        disabled={loading}
       >
-        <Text style={{ color: '#fff' }}>{loading ? 'Saving...':'Save Item'}</Text>
+        <Text style={{ color: '#fff' }}>
+          {loading ? 'Saving...' : 'Save Item'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+/* ------------------------------------------ */
 
 const styles = StyleSheet.create({
   container: {

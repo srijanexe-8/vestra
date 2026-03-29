@@ -1,47 +1,55 @@
 // src/utils/templateMap.js
 
 /* ------------------------------------------
-   Template Assets (Replace later with real ones)
+   Template Assets
 ------------------------------------------ */
+
 const templates = {
-  shirt_default: require('../../assets/templates/shirt.png'),
-  pants_default: require('../../assets/templates/pants.png'),
-  shoes_default: require('../../assets/templates/shoes.png'),
-  accessory_default: require('../../assets/templates/accessory.png'),
-};
-
-/* ------------------------------------------
-   Template Map (Category आधारित mapping)
------------------------------------------- */
-export const TEMPLATE_MAP = {
   Shirts: {
-    fallback: templates.shirt_default,
+    "T-Shirt": require('../../assets/templates/shirts/tshirt.png'),
+    "Full Sleeve": require('../../assets/templates/shirts/fullsleeve.png'),
+    "Hoodie": require('../../assets/templates/shirts/hoodie.png'),
+    "Polo": require('../../assets/templates/shirts/polo.png'),
+    fallback: require('../../assets/templates/shirts/default.png'),
   },
+
   Pants: {
-    fallback: templates.pants_default,
+    "Jeans": require('../../assets/templates/pants/jeans.png'),
+    "Chinos": require('../../assets/templates/pants/chinos.png'),
+    "Joggers": require('../../assets/templates/pants/joggers.png'),
+    fallback: require('../../assets/templates/pants/default.png'),
   },
+
   Shoes: {
-    fallback: templates.shoes_default,
+    "Sneakers": require('../../assets/templates/shoes/sneakers.png'),
+    "Formal": require('../../assets/templates/shoes/formal.png'),
+    "Boots": require('../../assets/templates/shoes/boots.png'),
+    fallback: require('../../assets/templates/shoes/default.png'),
   },
+
   Accessories: {
-    fallback: templates.accessory_default, // ✅ NEW
+    "Watch": require('../../assets/templates/accessories/watch.png'),
+    "Cap": require('../../assets/templates/accessories/cap.png'),
+    "Belt": require('../../assets/templates/accessories/belt.png'),
+    fallback: require('../../assets/templates/accessories/default.png'),
   },
 };
 
 /* ------------------------------------------
-   Get Template (ML-ready abstraction)
+   Get Template (CORE LOGIC)
 ------------------------------------------ */
 export function getTemplate(type, subtype) {
   if (!type) return null;
 
-  const categoryMap = TEMPLATE_MAP[type];
+  const categoryMap = templates[type];
 
   if (!categoryMap) return null;
 
-  // future: subtype-specific mapping
+  // ✅ subtype match
   if (subtype && categoryMap[subtype]) {
     return categoryMap[subtype];
   }
 
+  // ✅ fallback
   return categoryMap.fallback;
 }
