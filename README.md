@@ -121,7 +121,7 @@ The goal is to provide a fast, intuitive, and automated styling experience for u
 ## Team
 
 - Garvita Singh — Concept & Introduction  
-- Srijan Sharma — Product Vision  
+- Srijan Sharma — Product & Artistic Vision  
 - Ranith Mondal — Technical Development  
 - Arnav Goel — Implementation & Demo  
 - Karan — Testing & Challenges  

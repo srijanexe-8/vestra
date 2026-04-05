@@ -8,6 +8,9 @@
     "scheme": "vestra",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "newsApiKey": "aaf75385d0334c189ae57c2bea65ba0a"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -20,7 +23,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.vestra"
+      "package": "com.anonymous.vestra",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "output": "static",
@@ -39,7 +43,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
